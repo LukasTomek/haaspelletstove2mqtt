@@ -86,6 +86,7 @@ def on_connect(client, userdata, flags, rc):
         print("Failed to connect, return code %d\n", rc)
 # Initiate MQTT Client
 mqttc = mqtt.Client()
+#mqttc.username_pw_set(username, password=None)
 mqttc.on_connect = on_connect
 mqttc.connect(MQTT_BROKER, MQTT_PORT, MQTT_KEEPALIVE_INTERVAL)
 
