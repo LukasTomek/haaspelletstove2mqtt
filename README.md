@@ -1,7 +1,8 @@
 # haaspelletstove2mqtt
 Decode the serial output from a Haas & Sohn Pellet Stove and send it to MQTT (incl. Home Assistant auto discovery).
-Modify original code from [vandenberghev/haaspelletstove2mqtt](https://github.com/vandenberghev/haaspelletstove2mqtt)
-To use with Haas & Sohn Hydronic Pelletstove HSP 6-WT 537.08 RLU (V7.11)
+
+Modify original code from [vandenberghev/haaspelletstove2mqtt](https://github.com/vandenberghev/haaspelletstove2mqtt), to use with Haas & Sohn Hydronic Pelletstove HSP 6-WT 537.08 RLU (V7.11)
+
 This script requires changing the `ser. Ausgabe` (serial output) parameter on the stove to `DAQ`.
 To do this, press `Menu`, hold `+` and press `-` 6 times. This enables the `Service:` menu item.
 Go to `Service:` > `Par. general` > `ser. Ausgabe` and choose `DAQ`.
