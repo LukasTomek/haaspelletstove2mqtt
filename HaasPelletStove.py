@@ -25,11 +25,12 @@ def getHaasPelletStoveInfo(serialPort):
             line = bytesRead.decode()
 
         line = line.strip('\r\n').strip('pm ')
-        #print(line)
-
+        print(line)
+        if 'pm' in line:
+            line = line [line.find('pm')+3:]
         #valueList = list(map(float, line.split(' ')))
         valueList = line.split(' ')
-        #print(valueList)
+        print(valueList)
 
         outputList = {
             'unknown_0' : float(valueList[0]),
@@ -55,22 +56,23 @@ def getHaasPelletStoveInfo(serialPort):
             'current_chamber2_temp' : float(valueList[20]),
             'unknown_21' : int(valueList[21]),
             'seconds_in_current_stage' : int(valueList[22]),
-            'unknown_23' : int(valueList[23]),
-            'bitmask_24' : int(valueList[24]), #0b01 = STB??; 0b10 = DOOR CLOSED YES/NO
-            'bitmask_25' : int(valueList[25]), #0b01 = PELLET FEEDER ON/OFF; 0b10 = IGNITER ON/OFF
-            'bitmask_26' : int(valueList[26]), #0b10 = Heating ON/OFF?
-            'bitmask_27' : int(valueList[27]),
-            'bitmask_28' : int(valueList[28]),
-            'bitmask_29' : int(valueList[29]),
-            'bitmask_30' : int(valueList[30]),
-            'bitmask_31' : int(valueList[31])
+            'current_water_temp' : float(valueList[23]),
+            'desired_water_temp' : float(valueList[24]),
+            'bitmask_24' : int(valueList[25]), #0b01 = STB??; 0b10 = DOOR CLOSED YES/NO
+            'bitmask_25' : int(valueList[26]), #0b01 = PELLET FEEDER ON/OFF; 0b10 = IGNITER ON/OFF
+            'bitmask_26' : int(valueList[27]), #0b10 = Heating ON/OFF?
+            'bitmask_27' : int(valueList[28]),
+            'bitmask_28' : int(valueList[29]),
+            'bitmask_29' : int(valueList[30]),
+            'bitmask_30' : int(valueList[31]),
+            'bitmask_31' : int(valueList[32])
             }
 
         if DECODE_BITMASKS:
-            isDoorClosed = decodeMask(int(valueList[24]), MASK_DOOR_CLOSED)
-            isPelletFeederOn = decodeMask(int(valueList[25]), MASK_PELLETFEEDER_ON)
-            isIgniterOn = decodeMask(int(valueList[25]), MASK_IGNITER_ON)
-            isStoveHeating = decodeMask(int(valueList[26]), MASK_STOVE_HEATING)
+            isDoorClosed = decodeMask(int(valueList[25]), MASK_DOOR_CLOSED)
+            isPelletFeederOn = decodeMask(int(valueList[26]), MASK_PELLETFEEDER_ON)
+            isIgniterOn = decodeMask(int(valueList[26]), MASK_IGNITER_ON)
+            isStoveHeating = decodeMask(int(valueList[27]), MASK_STOVE_HEATING)
 
             outputList['door_is_closed'] = isDoorClosed
             outputList['pelletfeed_is_on'] = isPelletFeederOn
