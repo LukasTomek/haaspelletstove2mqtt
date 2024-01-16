@@ -19,18 +19,8 @@ decodeMask = lambda input, mask: ((input & mask) == mask)
 def getHaasPelletStoveInfo(serialPort):
     if serialPort is None: return None
     with serial.Serial(serialPort, 19200, timeout=2) as serialConn:
-        line = None
-        while not str(line).startswith('pm'):
-            bytesRead = serialConn.readline()
-            line = bytesRead.decode()
+        valueList = getData(serialConn)
 
-        line = line.strip('\r\n').strip('pm ')
-        print(line)
-        if 'pm' in line:
-            line = line [line.find('pm')+3:]
-        #valueList = list(map(float, line.split(' ')))
-        valueList = line.split(' ')
-        print(valueList)
 
         outputList = {
             'unknown_0' : float(valueList[0]),
@@ -80,3 +70,22 @@ def getHaasPelletStoveInfo(serialPort):
             outputList['stove_is_heating'] = isStoveHeating
 
         return json.dumps(outputList)
+    
+def getData(serialConn):
+    valueList = []
+    while valueList < 32:
+        line = None
+        while not str(line).startswith('pm'):
+            bytesRead = serialConn.readline()
+            line = bytesRead.decode()
+
+        line = line.strip('\r\n').strip('pm ')
+        print(line)
+        if 'pm' in line:
+            line = line [line.find('pm')+3:]
+        if 'z' in line:
+            line = line [:line.find('z')]
+        #valueList = list(map(float, line.split(' ')))
+        valueList = line.split(' ')
+        print(valueList)
+    return valueList
