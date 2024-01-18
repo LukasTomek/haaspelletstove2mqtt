@@ -78,6 +78,7 @@ KNOWN_KEYS = {
     "pelletfeed_is_on": { CONFIG_DEVICE_CLASS: "moving", CONFIG_NAME: "Pellet feed", CONFIG_SENSOR_TYPE: "binary_sensor", CONFIG_PAYLOAD_ON: "True", CONFIG_PAYLOAD_OFF: "False" },
     "igniter_is_on": { CONFIG_DEVICE_CLASS: "heat", CONFIG_NAME: "Igniter", CONFIG_SENSOR_TYPE: "binary_sensor", CONFIG_PAYLOAD_ON: "True", CONFIG_PAYLOAD_OFF: "False" },
     "stove_is_heating": { CONFIG_NAME: "Heating", CONFIG_SENSOR_TYPE: "binary_sensor", CONFIG_PAYLOAD_ON: "True", CONFIG_PAYLOAD_OFF: "False" }
+    "pump_is_on": { CONFIG_NAME: "Pump", CONFIG_SENSOR_TYPE: "binary_sensor", CONFIG_PAYLOAD_ON: "True", CONFIG_PAYLOAD_OFF: "False" }
     
     #"": { CONFIG_UNIT_OF_MEASUREMENT: "°C", CONFIG_NAME: "", CONFIG_SENSOR_TYPE: "sensor" },
     #"": { CONFIG_DEVICE_CLASS: "", CONFIG_NAME: "", CONFIG_SENSOR_TYPE: "binary_sensor" },

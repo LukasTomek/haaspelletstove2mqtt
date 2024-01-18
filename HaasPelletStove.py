@@ -11,6 +11,7 @@ MASK_DOOR_CLOSED = 0b10
 MASK_PELLETFEEDER_ON = 0b01
 MASK_IGNITER_ON = 0b10
 MASK_STOVE_HEATING = 0b10
+MASK_PUMP = 0b100
 
 #### DECLARATIONS ####
 
@@ -25,7 +26,7 @@ def getHaasPelletStoveInfo(serialPort):
         outputList = {
             'unknown_0' : float(valueList[0]),
             'current_flue_gas_temp' : float(valueList[1]),
-            'unknown_2' : int(valueList[2]),
+            'status' : int(valueList[2]),
             'unknown_sz_soll' : float(valueList[3]),
             'unknown_4' : int(valueList[4]),
             'current_room_temp' : float(valueList[5]),
@@ -64,11 +65,13 @@ def getHaasPelletStoveInfo(serialPort):
             isPelletFeederOn = decodeMask(int(valueList[26]), MASK_PELLETFEEDER_ON)
             isIgniterOn = decodeMask(int(valueList[26]), MASK_IGNITER_ON)
             isStoveHeating = decodeMask(int(valueList[27]), MASK_STOVE_HEATING)
+            isPumpOn = decodeMask(int(valueList[27]), MASK_PUMP)
 
             outputList['door_is_closed'] = isDoorClosed
             outputList['pelletfeed_is_on'] = isPelletFeederOn
             outputList['igniter_is_on'] = isIgniterOn
             outputList['stove_is_heating'] = isStoveHeating
+            outputList['pump_is_on'] = isPumpOn
 
         return json.dumps(outputList)
     
