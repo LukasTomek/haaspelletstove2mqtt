@@ -74,7 +74,7 @@ def getHaasPelletStoveInfo(serialPort):
     
 def getData(serialConn):
     valueList = []
-    while valueList < 32:
+    while len(valueList) < 32:
         line = None
         while not str(line).startswith('pm'):
             bytesRead = serialConn.readline()
