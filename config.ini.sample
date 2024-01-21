@@ -1,0 +1,12 @@
+[MQTT_BROKER]
+MQTT_BROKER = mqtt.myhost.com
+MQTT_PORT = 1883
+MQTT_KEEPALIVE_INTERVAL = 30
+
+[MQTT_LOGIN]
+USERNAME = homeassistant
+PASSWORD = eitaeLoo123
+
+[UART]
+PORT = /dev/ttyACM0
+

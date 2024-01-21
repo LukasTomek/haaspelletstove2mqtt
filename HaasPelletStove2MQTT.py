@@ -1,19 +1,26 @@
 #!/usr/bin/python3
-
+import configparser
 import HaasPelletStove as haas
 import json
 import paho.mqtt.client as mqtt
 import time
 
+
+config = configparser.ConfigParser()
+config.read('config.ini')
+
 #### USER MQTT CONFIG ####
-MQTT_BROKER = "mqtt.myhost.com"
-MQTT_PORT = 1883
-MQTT_KEEPALIVE_INTERVAL = 30
+MQTT_BROKER = config['MQTT_BROKER']['MQTT_BROKER']
+MQTT_PORT = int(config['MQTT_BROKER']['MQTT_PORT'])
+MQTT_KEEPALIVE_INTERVAL = int(config['MQTT_BROKER']['MQTT_KEEPALIVE_INTERVAL'])
 
 HASS_TOPIC_PREFIX = "homeassistant" # Default 'homeassistant'
 HASS_ENTITY_NAME = "mypelletstove"  # Used for topics + sensor prefix
 HASS_CONFIG_SUFFIX = "config"       # Should not be changed
 HASS_STATE_SUFFIX = "state"         # Should not be changed
+
+USERNAME = config['MQTT_LOGIN']['USERNAME']
+PASSWORD = config['MQTT_LOGIN']['PASSWORD']
 
 SECONDS_BETWEEN_REFRESH = 10
 
@@ -46,7 +53,7 @@ def getConfigInfo(key):
 #### KNOWN KEYS ####
 #Index vs configuration
 CONFIG_UNIT_OF_MEASUREMENT = "unit_of_measurement"
-CONFIG_NAME = "friendly_name"
+CONFIG_NAME = "name"
 CONFIG_SENSOR_TYPE = "sensor_type"
 CONFIG_DEVICE_CLASS = "device_class"
 CONFIG_PAYLOAD_ON = "payload_on"
@@ -55,6 +62,20 @@ CONFIG_PAYLOAD_OFF = "payload_off"
 INCLUDED_CONFIG_KEYS = [CONFIG_UNIT_OF_MEASUREMENT, CONFIG_DEVICE_CLASS, CONFIG_PAYLOAD_ON, CONFIG_PAYLOAD_OFF] #, CONFIG_NAME]
 
 KNOWN_KEYS = {
+    "unknown_0": { CONFIG_UNIT_OF_MEASUREMENT: "", CONFIG_NAME: "Seconds in stage", CONFIG_SENSOR_TYPE: "sensor" },
+    "status": { CONFIG_UNIT_OF_MEASUREMENT: "", CONFIG_NAME: "Seconds in stage", CONFIG_SENSOR_TYPE: "sensor" },
+    "unknown_4": { CONFIG_UNIT_OF_MEASUREMENT: "", CONFIG_NAME: "Seconds in stage", CONFIG_SENSOR_TYPE: "sensor" },
+    "unknown_10": { CONFIG_UNIT_OF_MEASUREMENT: "", CONFIG_NAME: "Seconds in stage", CONFIG_SENSOR_TYPE: "sensor" },
+    "unknown_21": { CONFIG_UNIT_OF_MEASUREMENT: "", CONFIG_NAME: "Seconds in stage", CONFIG_SENSOR_TYPE: "sensor" },
+    "unknown_23": { CONFIG_UNIT_OF_MEASUREMENT: "", CONFIG_NAME: "Seconds in stage", CONFIG_SENSOR_TYPE: "sensor" },
+    "bitmask_26": { CONFIG_UNIT_OF_MEASUREMENT: "", CONFIG_NAME: "Seconds in stage", CONFIG_SENSOR_TYPE: "sensor" },
+    "bitmask_27": { CONFIG_UNIT_OF_MEASUREMENT: "", CONFIG_NAME: "Seconds in stage", CONFIG_SENSOR_TYPE: "sensor" },
+    "bitmask_28": { CONFIG_UNIT_OF_MEASUREMENT: "", CONFIG_NAME: "Seconds in stage", CONFIG_SENSOR_TYPE: "sensor" },
+    "bitmask_29": { CONFIG_UNIT_OF_MEASUREMENT: "", CONFIG_NAME: "Seconds in stage", CONFIG_SENSOR_TYPE: "sensor" },
+    "bitmask_30": { CONFIG_UNIT_OF_MEASUREMENT: "", CONFIG_NAME: "Seconds in stage", CONFIG_SENSOR_TYPE: "sensor" },
+    "bitmask_31": { CONFIG_UNIT_OF_MEASUREMENT: "", CONFIG_NAME: "Seconds in stage", CONFIG_SENSOR_TYPE: "sensor" },
+    "bitmask_32": { CONFIG_UNIT_OF_MEASUREMENT: "", CONFIG_NAME: "Seconds in stage", CONFIG_SENSOR_TYPE: "sensor" },
+    "bitmask_33": { CONFIG_UNIT_OF_MEASUREMENT: "", CONFIG_NAME: "Seconds in stage", CONFIG_SENSOR_TYPE: "sensor" },
     "desired_water_temp": { CONFIG_UNIT_OF_MEASUREMENT: "°C", CONFIG_NAME: "Water (desired)", CONFIG_SENSOR_TYPE: "sensor" },
     "current_water_temp": { CONFIG_UNIT_OF_MEASUREMENT: "°C", CONFIG_NAME: "Water", CONFIG_SENSOR_TYPE: "sensor" },
     "current_flue_gas_temp": { CONFIG_UNIT_OF_MEASUREMENT: "°C", CONFIG_NAME: "Flue gas", CONFIG_SENSOR_TYPE: "sensor" },
@@ -77,9 +98,8 @@ KNOWN_KEYS = {
     "door_is_closed": { CONFIG_DEVICE_CLASS: "door", CONFIG_NAME: "Door", CONFIG_SENSOR_TYPE: "binary_sensor", CONFIG_PAYLOAD_ON: "True", CONFIG_PAYLOAD_OFF: "False" },
     "pelletfeed_is_on": { CONFIG_DEVICE_CLASS: "moving", CONFIG_NAME: "Pellet feed", CONFIG_SENSOR_TYPE: "binary_sensor", CONFIG_PAYLOAD_ON: "True", CONFIG_PAYLOAD_OFF: "False" },
     "igniter_is_on": { CONFIG_DEVICE_CLASS: "heat", CONFIG_NAME: "Igniter", CONFIG_SENSOR_TYPE: "binary_sensor", CONFIG_PAYLOAD_ON: "True", CONFIG_PAYLOAD_OFF: "False" },
-    "stove_is_heating": { CONFIG_NAME: "Heating", CONFIG_SENSOR_TYPE: "binary_sensor", CONFIG_PAYLOAD_ON: "True", CONFIG_PAYLOAD_OFF: "False" }
+    "stove_is_heating": { CONFIG_NAME: "Heating", CONFIG_SENSOR_TYPE: "binary_sensor", CONFIG_PAYLOAD_ON: "True", CONFIG_PAYLOAD_OFF: "False" },
     "pump_is_on": { CONFIG_NAME: "Pump", CONFIG_SENSOR_TYPE: "binary_sensor", CONFIG_PAYLOAD_ON: "True", CONFIG_PAYLOAD_OFF: "False" }
-    
     #"": { CONFIG_UNIT_OF_MEASUREMENT: "°C", CONFIG_NAME: "", CONFIG_SENSOR_TYPE: "sensor" },
     #"": { CONFIG_DEVICE_CLASS: "", CONFIG_NAME: "", CONFIG_SENSOR_TYPE: "binary_sensor" },
 }
@@ -87,10 +107,10 @@ def on_connect(client, userdata, flags, rc):
     if rc == 0:
         print("Connected to MQTT Broker!")
     else:
-        print("Failed to connect, return code %d\n", rc)
+        print("Failed to connect, return code {}\n".format(rc))
 # Initiate MQTT Client
 mqttc = mqtt.Client()
-#mqttc.username_pw_set(username, password=None)
+mqttc.username_pw_set(USERNAME, PASSWORD)
 mqttc.on_connect = on_connect
 mqttc.connect(MQTT_BROKER, MQTT_PORT, MQTT_KEEPALIVE_INTERVAL)
 
@@ -104,13 +124,14 @@ for k in KNOWN_KEYS:
 #### RUN ####
 while True:
     print('Fetching stove info...')
-    haasJson = haas.getHaasPelletStoveInfo('/dev/ttyACM0')
+    haasJson = haas.getHaasPelletStoveInfo(config['UART']['PORT'])
     haasInfo = json.loads(haasJson)
 
     for k in haasInfo:
         if not k in KNOWN_KEYS: continue
         stateTopic = getStateTopic(k)
         mqttc.publish(stateTopic, haasInfo[k])
+        print('{}, {}'.format(stateTopic, haasInfo[k]))
 
     mqttc.loop()
     time.sleep(SECONDS_BETWEEN_REFRESH)

@@ -7,6 +7,8 @@ This script requires changing the `ser. Ausgabe` (serial output) parameter on th
 To do this, press `Menu`, hold `+` and press `-` 6 times. This enables the `Service:` menu item.
 Go to `Service:` > `Par. general` > `ser. Ausgabe` and choose `DAQ`.
 
+pip install paho-mqtt serial
+
 This script can be run as a service with systemd.
 
 EXAMPLE /lib/systemd/system/haaspelletstove2mqtt.service:
