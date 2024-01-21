@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import configparser
-import HaasPelletStove as haas
+import HaasPelletStove as uart
+import HaasPelletStoveHTTP as http
 import json
 import paho.mqtt.client as mqtt
 import time
@@ -62,6 +63,7 @@ CONFIG_PAYLOAD_OFF = "payload_off"
 INCLUDED_CONFIG_KEYS = [CONFIG_UNIT_OF_MEASUREMENT, CONFIG_DEVICE_CLASS, CONFIG_PAYLOAD_ON, CONFIG_PAYLOAD_OFF] #, CONFIG_NAME]
 
 KNOWN_KEYS = {
+    "mode": { CONFIG_UNIT_OF_MEASUREMENT: "", CONFIG_NAME: "Mode", CONFIG_SENSOR_TYPE: "sensor" },
     "unknown_0": { CONFIG_UNIT_OF_MEASUREMENT: "", CONFIG_NAME: "Seconds in stage", CONFIG_SENSOR_TYPE: "sensor" },
     "status": { CONFIG_UNIT_OF_MEASUREMENT: "", CONFIG_NAME: "Seconds in stage", CONFIG_SENSOR_TYPE: "sensor" },
     "unknown_4": { CONFIG_UNIT_OF_MEASUREMENT: "", CONFIG_NAME: "Seconds in stage", CONFIG_SENSOR_TYPE: "sensor" },
@@ -120,18 +122,29 @@ for k in KNOWN_KEYS:
     configTopic = getConfigTopic(k)
     configInfo = getConfigInfo(k)
     mqttc.publish(configTopic, configInfo, retain=True)
+loops = 0
+parser = http.HttpConection(config['HAASPELLETSTOVE']['IP'])
 
 #### RUN ####
 while True:
-    print('Fetching stove info...')
-    haasJson = haas.getHaasPelletStoveInfo(config['UART']['PORT'])
-    haasInfo = json.loads(haasJson)
-
-    for k in haasInfo:
-        if not k in KNOWN_KEYS: continue
-        stateTopic = getStateTopic(k)
-        mqttc.publish(stateTopic, haasInfo[k])
-        print('{}, {}'.format(stateTopic, haasInfo[k]))
+    if(config['UART']['PORT'] != ''):
+        print('Fetching stove info...')
+        haasJson = uart.getHaasPelletStoveInfo(config['UART']['PORT'])
+        haasInfo = json.loads(haasJson)
+    
+        for k in haasInfo:
+            if not k in KNOWN_KEYS: continue
+            stateTopic = getStateTopic(k)
+            mqttc.publish(stateTopic, haasInfo[k])
+            print('{}, {}'.format(stateTopic, haasInfo[k]))
+        
+    if(config['HAASPELLETSTOVE']['IP'] != ''):
+        parser.pollDeviceStatus()
+        if parser.disableAdapter == False:
+            stateTopic = getStateTopic('mode')
+            mqttc.publish(stateTopic, parser.mode)
+            print('{}, {}'.format(stateTopic, parser.mode))
 
     mqttc.loop()
     time.sleep(SECONDS_BETWEEN_REFRESH)
+    loops += 1
