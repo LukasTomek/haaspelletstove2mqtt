@@ -50,14 +50,14 @@ def getHaasPelletStoveInfo(serialPort):
             'unknown_23' : int(valueList[23]),
             'current_water_temp' : float(valueList[24]),
             'desired_water_temp' : float(valueList[25]),
-            'bitmask_24' : int(valueList[26]), #0b01 = STB??; 0b10 = DOOR CLOSED YES/NO
-            'bitmask_25' : int(valueList[27]), #0b01 = PELLET FEEDER ON/OFF; 0b10 = IGNITER ON/OFF
-            'bitmask_26' : int(valueList[28]), #0b10 = Heating ON/OFF?
-            'bitmask_27' : int(valueList[29]),
-            'bitmask_28' : int(valueList[30]),
-            'bitmask_29' : int(valueList[31]),
-            'bitmask_30' : int(valueList[32]),
-            'bitmask_31' : int(valueList[33])
+            'bitmask_26' : int(valueList[26]), #0b01 = STB??; 0b10 = DOOR CLOSED YES/NO
+            'bitmask_27' : int(valueList[27]), #0b01 = PELLET FEEDER ON/OFF; 0b10 = IGNITER ON/OFF
+            'bitmask_28' : int(valueList[28]), #0b10 = Heating ON/OFF?
+            'bitmask_29' : int(valueList[29]),
+            'bitmask_30' : int(valueList[30]),
+            'bitmask_31' : int(valueList[31]),
+            'bitmask_32' : int(valueList[32]),
+            'bitmask_33' : int(valueList[33])
             }
 
         if DECODE_BITMASKS:
