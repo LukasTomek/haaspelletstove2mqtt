@@ -45,6 +45,7 @@ def getConfigInfo(key):
     configInfo = {}
     configInfo["state_topic"] = getStateTopic(key)
     configInfo["name"] = key
+    configInfo["unique_id"] = HASS_ENTITY_NAME + "_" + key
     if key in KNOWN_KEYS:
         config = KNOWN_KEYS[key]
         for ck in INCLUDED_CONFIG_KEYS:
@@ -69,7 +70,7 @@ CONFIG_UNIQUE_ID = "unique_id"
 INCLUDED_CONFIG_KEYS = [CONFIG_UNIT_OF_MEASUREMENT, CONFIG_DEVICE_CLASS, CONFIG_PAYLOAD_ON, CONFIG_PAYLOAD_OFF, CONFIG_COMMAND_TOPIC, CONFIG_UNIQUE_ID, CONFIG_STATE_ON, CONFIG_STATE_OFF] #, CONFIG_NAME]
 
 KNOWN_KEYS = {
-    "switch_stove": {CONFIG_UNIQUE_ID: "mypelletstove_switch_stove_1", CONFIG_COMMAND_TOPIC: "homeassistant/switch/mypelletstove_switch_stove/set", CONFIG_SENSOR_TYPE: "switch", CONFIG_PAYLOAD_ON: "1", CONFIG_PAYLOAD_OFF: "0", CONFIG_STATE_ON: "1", CONFIG_STATE_OFF: "0"},
+    "switch_stove": {CONFIG_COMMAND_TOPIC: "homeassistant/switch/mypelletstove_switch_stove/set", CONFIG_SENSOR_TYPE: "switch", CONFIG_PAYLOAD_ON: "true", CONFIG_PAYLOAD_OFF: "false", CONFIG_STATE_ON: "true", CONFIG_STATE_OFF: "false"},
     "mode": { CONFIG_UNIT_OF_MEASUREMENT: "", CONFIG_NAME: "Mode", CONFIG_SENSOR_TYPE: "sensor" },
     "unknown_0": { CONFIG_UNIT_OF_MEASUREMENT: "", CONFIG_NAME: "Seconds in stage", CONFIG_SENSOR_TYPE: "sensor" },
     "status": { CONFIG_UNIT_OF_MEASUREMENT: "", CONFIG_NAME: "Seconds in stage", CONFIG_SENSOR_TYPE: "sensor" },
@@ -152,6 +153,10 @@ while True:
             stateTopic = getStateTopic('mode')
             mqttc.publish(stateTopic, parser.mode)
             print('{}, {}'.format(stateTopic, parser.mode))
+            stateTopic = getStateTopic('switch_stove')
+            mqttc.publish(stateTopic, parser.prg)
+            print('{}, {}'.format(stateTopic, parser.mode))
+            
 
     mqttc.loop()
     time.sleep(SECONDS_BETWEEN_REFRESH)
