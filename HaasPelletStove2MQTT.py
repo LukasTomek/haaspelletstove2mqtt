@@ -65,7 +65,7 @@ CONFIG_COMMAND_TOPIC = 'command_topic'
 INCLUDED_CONFIG_KEYS = [CONFIG_UNIT_OF_MEASUREMENT, CONFIG_DEVICE_CLASS, CONFIG_PAYLOAD_ON, CONFIG_PAYLOAD_OFF, CONFIG_COMMAND_TOPIC] #, CONFIG_NAME]
 
 KNOWN_KEYS = {
-    "switch_stove": { CONFIG_COMMAND_TOPIC: "homeassistant/switch/mypelletstove_switch_stove", CONFIG_SENSOR_TYPE: "switch", CONFIG_PAYLOAD_ON: "true", CONFIG_PAYLOAD_OFF: "false"},
+    "switch_stove": { CONFIG_COMMAND_TOPIC: "homeassistant/switch/mypelletstove_switch_stove/set", CONFIG_SENSOR_TYPE: "switch", CONFIG_PAYLOAD_ON: "true", CONFIG_PAYLOAD_OFF: "false"},
     "mode": { CONFIG_UNIT_OF_MEASUREMENT: "", CONFIG_NAME: "Mode", CONFIG_SENSOR_TYPE: "sensor" },
     "unknown_0": { CONFIG_UNIT_OF_MEASUREMENT: "", CONFIG_NAME: "Seconds in stage", CONFIG_SENSOR_TYPE: "sensor" },
     "status": { CONFIG_UNIT_OF_MEASUREMENT: "", CONFIG_NAME: "Seconds in stage", CONFIG_SENSOR_TYPE: "sensor" },
