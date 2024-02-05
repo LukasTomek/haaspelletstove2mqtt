@@ -44,7 +44,7 @@ def getConfigTopic(key):
 def getConfigInfo(key):
     configInfo = {}
     configInfo["state_topic"] = getStateTopic(key)
-    configInfo["name"] = HASS_ENTITY_NAME + "_" + key
+    configInfo["name"] = key
     if key in KNOWN_KEYS:
         config = KNOWN_KEYS[key]
         for ck in INCLUDED_CONFIG_KEYS:
@@ -59,10 +59,13 @@ CONFIG_SENSOR_TYPE = "sensor_type"
 CONFIG_DEVICE_CLASS = "device_class"
 CONFIG_PAYLOAD_ON = "payload_on"
 CONFIG_PAYLOAD_OFF = "payload_off"
+CONFIG_STATE_TOPIC = 'state_topic'
+CONFIG_COMMAND_TOPIC = 'command_topic'
 
-INCLUDED_CONFIG_KEYS = [CONFIG_UNIT_OF_MEASUREMENT, CONFIG_DEVICE_CLASS, CONFIG_PAYLOAD_ON, CONFIG_PAYLOAD_OFF] #, CONFIG_NAME]
+INCLUDED_CONFIG_KEYS = [CONFIG_UNIT_OF_MEASUREMENT, CONFIG_DEVICE_CLASS, CONFIG_PAYLOAD_ON, CONFIG_PAYLOAD_OFF, CONFIG_COMMAND_TOPIC] #, CONFIG_NAME]
 
 KNOWN_KEYS = {
+    "switch_stove": { CONFIG_COMMAND_TOPIC: "homeassistant/switch/mypelletstove_switch_stove", CONFIG_SENSOR_TYPE: "switch", CONFIG_PAYLOAD_ON: "true", CONFIG_PAYLOAD_OFF: "false"},
     "mode": { CONFIG_UNIT_OF_MEASUREMENT: "", CONFIG_NAME: "Mode", CONFIG_SENSOR_TYPE: "sensor" },
     "unknown_0": { CONFIG_UNIT_OF_MEASUREMENT: "", CONFIG_NAME: "Seconds in stage", CONFIG_SENSOR_TYPE: "sensor" },
     "status": { CONFIG_UNIT_OF_MEASUREMENT: "", CONFIG_NAME: "Seconds in stage", CONFIG_SENSOR_TYPE: "sensor" },
@@ -122,6 +125,7 @@ for k in KNOWN_KEYS:
     configTopic = getConfigTopic(k)
     configInfo = getConfigInfo(k)
     mqttc.publish(configTopic, configInfo, retain=True)
+    print('{}, {}'.format(configTopic, configInfo))
 loops = 0
 parser = http.HttpConection(config['HAASPELLETSTOVE']['IP'])
 
