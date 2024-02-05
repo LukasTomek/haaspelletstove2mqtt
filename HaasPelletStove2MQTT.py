@@ -155,7 +155,7 @@ while True:
             print('{}, {}'.format(stateTopic, parser.mode))
             stateTopic = getStateTopic('switch_stove')
             mqttc.publish(stateTopic, parser.prg)
-            print('{}, {}'.format(stateTopic, parser.mode))
+            print('{}, {}'.format(stateTopic, parser.prg))
             
 
     mqttc.loop()
