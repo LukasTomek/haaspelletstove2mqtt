@@ -81,7 +81,7 @@ def getData(serialConn):
         line = None
         while not str(line).startswith('pm'):
             bytesRead = serialConn.readline()
-            line = bytesRead.decode()
+            line = bytesRead.decode('utf-8', 'ignore') #data get sometime corrupted so ingnore this data 
 
         line = line.strip('\r\n').strip('pm ')
         print(line)
