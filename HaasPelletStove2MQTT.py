@@ -113,15 +113,28 @@ KNOWN_KEYS = {
     #"": { CONFIG_UNIT_OF_MEASUREMENT: "°C", CONFIG_NAME: "", CONFIG_SENSOR_TYPE: "sensor" },
     #"": { CONFIG_DEVICE_CLASS: "", CONFIG_NAME: "", CONFIG_SENSOR_TYPE: "binary_sensor" },
 }
+
+def on_message_from_bedroom(client, userdata, message):
+    print("Message Recieved from Bedroom: "+message.payload.decode())
+   
+def on_subscribe(client, userdata, mid, granted_qos):
+    print("Message Recieved from Others: ".format(mid))
+
+def on_message(client, userdata, message):
+    print("Message Recieved from Others: "+message.payload.decode())
+    
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
         print("Connected to MQTT Broker!")
     else:
         print("Failed to connect, return code {}\n".format(rc))
+        
 # Initiate MQTT Client
 mqttc = mqtt.Client()
 mqttc.username_pw_set(USERNAME, PASSWORD)
 mqttc.on_connect = on_connect
+mqttc.on_subscribe = on_subscribe
+mqttc.on_message = on_message
 mqttc.connect(MQTT_BROKER, MQTT_PORT, MQTT_KEEPALIVE_INTERVAL)
 
 print('Configuring topics...')
@@ -131,6 +144,9 @@ for k in KNOWN_KEYS:
     configInfo = getConfigInfo(k)
     mqttc.publish(configTopic, configInfo, retain=True)
     print('{}, {}'.format(configTopic, configInfo))
+mytopic = 'homeassistant/#'
+mqttc.subscribe(mytopic)
+mqttc.message_callback_add(mytopic, on_message_from_bedroom)
 loops = 0
 parser = http.HttpConection(config['HAASPELLETSTOVE']['IP'])
 
