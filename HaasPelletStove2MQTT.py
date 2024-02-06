@@ -145,7 +145,7 @@ for k in KNOWN_KEYS:
     mqttc.publish(configTopic, configInfo, retain=True)
     print('{}, {}'.format(configTopic, configInfo))
 mytopic = 'homeassistant/#'
-mqttc.subscribe(mytopic)
+mqttc.subscribe(mytopic, qos=1)
 mqttc.message_callback_add(mytopic, on_message_from_bedroom)
 loops = 0
 parser = http.HttpConection(config['HAASPELLETSTOVE']['IP'])
