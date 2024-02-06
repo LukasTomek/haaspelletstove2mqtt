@@ -144,7 +144,7 @@ for k in KNOWN_KEYS:
     configInfo = getConfigInfo(k)
     mqttc.publish(configTopic, configInfo, retain=True)
     print('{}, {}'.format(configTopic, configInfo))
-mytopic = 'homeassistant/#'
+mytopic = 'homeassistant/switch/#'
 mqttc.subscribe(mytopic, qos=1)
 mqttc.message_callback_add(mytopic, on_message_from_bedroom)
 loops = 0
