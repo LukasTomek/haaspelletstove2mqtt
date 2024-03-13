@@ -1,7 +1,7 @@
 
 import hashlib
 import json
-from requests import get
+from requests import get, post
 
 class HttpConection():
     """__init__() functions as the class constructor"""
@@ -28,64 +28,66 @@ class HttpConection():
     def handleStateChange(self, id, state):
         # Warning, state can be null if it was deleted
         print('stateChange ' + id + ' ' + state)
-        # print('stateChange ' + id + ' ' + JSON.stringify(state));
-    
+        
         # you can use the ack flag to detect if it is status (true) or command (false)
-        # if (state and !state.ack):
-        #     adapter.log.debug('stateChange (command): ' + id + ' ' + JSON.stringify(state));
-        #
-        #     if (String(id) === (adapter.namespace + '.device.prg')) {
+        if (state and not state.ack):
+            print('stateChange (command): ' + id + ' ' + state)
+            post_data_prg = '{"prg":' + state + '}'
+            self.createHeader(post_data_prg)
+            
+            r = post(self.url, data=post_data_prg, headers=self.headers)
+            print(r.content)
+        
+        # if String(id) is (adapter.namespace + '.device.prg'):
         #         # Set new program
-        #         const post_data_prg = '{"prg":' + state.val + '}';
+        #
         #
         #         # Perform request
         #         request.post({
-        #             headers: createHeader(post_data_prg),
-        #             url:     'http://' + adapter.config.fireplaceAddress + '/status.cgi',
+        #             headers: ,
+        #             url:     self.url,
         #             body:    post_data_prg
-        #         }, function(error, response, body) {
-        #             adapter.log.debug('POST response: ' + response + ' [RESPONSE]; ' + body + ' [BODY]; ' + error + ' [ERROR];');
+        #         }, def(error, response, body):
+        #             print('POST response: ' + response + ' [RESPONSE]; ' + body + ' [BODY]; ' + error + ' [ERROR];')
         #
         #             # POST was successful, perform ack
-        #             if (error === null && response.statusCode === 200) {
+        #         if error is None and response.statusCode is 200:
         #                 # Acknowledge command
         #                 adapter.setState(adapter.namespace + '.device.prg', state.val, true);
         #             # POST was not successful, revert
-        #             } else {
-        #                 adapter.log.error('stateChange (command): ' + id + ' ' + JSON.stringify(state) + ' was not successful');
-        #                 adapter.log.error('POST response: ' + response + ' [RESPONSE]; ' + body + ' [BODY]; ' + error + ' [ERROR];');
-        #             }
+        #             else:
+        #                 print('stateChange (command): ' + id + ' ' + (state) + ' was not successful')
+        #                 print('POST response: ' + response + ' [RESPONSE]; ' + body + ' [BODY]; ' + error + ' [ERROR];')
+        #
         #
         #             # Poll new state to update nonce immediately
-        #             pollDeviceStatus();
-        #         });
-        #     } else if (String(id) === (adapter.namespace + '.device.sp_temp')) {
+        #             pollDeviceStatus()
+        #         )
+        # elif String(id) is (adapter.namespace + '.device.sp_temp'):
         #         # Set new program
-        #         const post_data_sp_temp = '{"sp_temp":' + state.val + '}';
+        #     const post_data_sp_temp = '{"sp_temp":' + state.val + '}'
         #
         #         # Perform request
         #         request.post({
         #             headers: createHeader(post_data_sp_temp),
         #             url:     'http://' + adapter.config.fireplaceAddress + '/status.cgi',
         #             body:    post_data_sp_temp
-        #         }, function(error, response, body) {
-        #             adapter.log.debug('POST response: ' + response + ' [RESPONSE]; ' + body + ' [BODY]; ' + error + ' [ERROR];');
+        #         }, function(error, response, body):
+        #             print('POST response: ' + response + ' [RESPONSE]; ' + body + ' [BODY]; ' + error + ' [ERROR];')
         #
         #             # POST was successful, perform ack
-        #             if (error === null && response.statusCode === 200) {
-        #                 // Acknowledge command
+        #             if error is None and response.statusCode is 200:
+        #                 # Acknowledge command
         #                 adapter.setState(adapter.namespace + '.device.sp_temp', state.val, true);
         #             # POST was not successful, revert
-        #             } else {
-        #                 adapter.log.error('stateChange (command): ' + id + ' ' + JSON.stringify(state) + ' was not successful');
-        #                 adapter.log.error('POST response: ' + response + ' [RESPONSE]; ' + body + ' [BODY]; ' + error + ' [ERROR];');
-        #             }
+        #             else:
+        #                 print('stateChange (command): ' + id + ' ' + JSON.stringify(state) + ' was not successful')
+        #                 print('POST response: ' + response + ' [RESPONSE]; ' + body + ' [BODY]; ' + error + ' [ERROR];')
+        #
         #
         #             # Poll new state to update nonce immediately
-        #             pollDeviceStatus();
-        #         });
-        #     }
-        # }
+        #             pollDeviceStatus()
+        #         )
 
         
     def syncState(self, state, path):

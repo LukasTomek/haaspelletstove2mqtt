@@ -41,6 +41,9 @@ def getStateTopic(key):
 def getConfigTopic(key):
     return getBaseTopic(key) + "/" + HASS_CONFIG_SUFFIX
 
+def getSetTopic(key):
+    return getBaseTopic(key) + "/" + HASS_CONFIG_SUFFIX
+
 def getConfigInfo(key):
     configInfo = {}
     configInfo["state_topic"] = getStateTopic(key)
@@ -113,67 +116,83 @@ KNOWN_KEYS = {
     #"": { CONFIG_UNIT_OF_MEASUREMENT: "°C", CONFIG_NAME: "", CONFIG_SENSOR_TYPE: "sensor" },
     #"": { CONFIG_DEVICE_CLASS: "", CONFIG_NAME: "", CONFIG_SENSOR_TYPE: "binary_sensor" },
 }
-
-def on_message_from_bedroom(client, userdata, message):
-    print("Message Recieved from Bedroom: "+message.payload.decode())
-   
-def on_subscribe(client, userdata, mid, granted_qos):
-    print("Message Recieved from Others: ".format(mid))
-
-def on_message(client, userdata, message):
-    print("Message Recieved from Others: "+message.payload.decode())
-    
-def on_connect(client, userdata, flags, rc):
-    if rc == 0:
-        print("Connected to MQTT Broker!")
-    else:
-        print("Failed to connect, return code {}\n".format(rc))
+class MQTTConnector():
+    """__init__() functions as the class constructor"""
+    def __init__(self, mqttc):
+        self.mqttc = mqttc
+        mqttc.username_pw_set(USERNAME, PASSWORD)
+        mqttc.on_connect = self.on_connect
+        mqttc.on_subscribe = self.on_subscribe
+        mqttc.on_message = self.on_message
+        mqttc.connect(MQTT_BROKER, MQTT_PORT, MQTT_KEEPALIVE_INTERVAL)
         
-# Initiate MQTT Client
-mqttc = mqtt.Client()
-mqttc.username_pw_set(USERNAME, PASSWORD)
-mqttc.on_connect = on_connect
-mqttc.on_subscribe = on_subscribe
-mqttc.on_message = on_message
-mqttc.connect(MQTT_BROKER, MQTT_PORT, MQTT_KEEPALIVE_INTERVAL)
-
-print('Configuring topics...')
-#Configure HASS MQTT topics
-for k in KNOWN_KEYS:
-    configTopic = getConfigTopic(k)
-    configInfo = getConfigInfo(k)
-    mqttc.publish(configTopic, configInfo, retain=True)
-    print('{}, {}'.format(configTopic, configInfo))
-mytopic = 'homeassistant/switch/#'
-mqttc.subscribe(mytopic, qos=1)
-mqttc.message_callback_add(mytopic, on_message_from_bedroom)
-loops = 0
-parser = http.HttpConection(config['HAASPELLETSTOVE']['IP'])
-
-#### RUN ####
-while True:
-    if(config['UART']['PORT'] != ''):
-        print('Fetching stove info...')
-        haasJson = uart.getHaasPelletStoveInfo(config['UART']['PORT'])
-        haasInfo = json.loads(haasJson)
+    def on_message_from_bedroom(self, client, userdata, message):
+        print("Message Recieved from Bedroom: "+message.payload.decode())
+       
+    def on_subscribe(self, client, userdata, mid, granted_qos):
+        print("Message Recieved from Others: ".format(mid))
     
-        for k in haasInfo:
-            if not k in KNOWN_KEYS: continue
-            stateTopic = getStateTopic(k)
-            mqttc.publish(stateTopic, haasInfo[k])
-            print('{}, {}'.format(stateTopic, haasInfo[k]))
+    def on_message(self, client, userdata, message):
+        print("Message Recieved from Others: "+message.payload.decode())
         
-    if(config['HAASPELLETSTOVE']['IP'] != ''):
-        parser.pollDeviceStatus()
-        if parser.disableAdapter == False:
-            stateTopic = getStateTopic('mode')
-            mqttc.publish(stateTopic, parser.mode)
-            print('{}, {}'.format(stateTopic, parser.mode))
-            stateTopic = getStateTopic('switch_stove')
-            mqttc.publish(stateTopic, parser.prg)
-            print('{}, {}'.format(stateTopic, parser.prg))
+    def on_connect(self, client, userdata, flags, rc):
+        if rc == 0:
+            print("Connected to MQTT Broker!")
+        else:
+            print("Failed to connect, return code {}\n".format(rc))
+        
+def main(self):
+    # Initiate MQTT Client
+    mqttc = mqtt.Client()
+    # Initiate  MQTT Cconnector
+    connector = MQTTConnector(mqttc)
+
+    
+
+    
+    print('Configuring topics...')
+    #Configure HASS MQTT topics
+    for k in KNOWN_KEYS:
+        configTopic = getConfigTopic(k)
+        configInfo = getConfigInfo(k)
+        mqttc.publish(configTopic, configInfo, retain=True)
+        print('{}, {}'.format(configTopic, configInfo))
+    mytopic = 'homeassistant/switch/mypelletstove_switch_stove/set'
+    mqttc.subscribe(mytopic, qos=1)
+    mqttc.message_callback_add(mytopic, connector.on_message_from_bedroom)
+    loops = 0
+    parser = http.HttpConection(config['HAASPELLETSTOVE']['IP'])
+    
+    #### RUN ####
+    while True:
+        if(config['UART']['PORT'] != ''):
+            print('Fetching stove info...')
+            haasJson = uart.getHaasPelletStoveInfo(config['UART']['PORT'])
+            haasInfo = json.loads(haasJson)
+        
+            for k in haasInfo:
+                if not k in KNOWN_KEYS: continue
+                stateTopic = getStateTopic(k)
+                mqttc.publish(stateTopic, haasInfo[k])
+                print('{}, {}'.format(stateTopic, haasInfo[k]))
             
+        if(config['HAASPELLETSTOVE']['IP'] != ''):
+            parser.pollDeviceStatus()
+            if parser.disableAdapter == False:
+                stateTopic = getStateTopic('mode')
+                mqttc.publish(stateTopic, parser.mode)
+                print('{}, {}'.format(stateTopic, parser.mode))
+                stateTopic = getStateTopic('switch_stove')
+                mqttc.publish(stateTopic, parser.prg)
+                print('{}, {}'.format(stateTopic, parser.prg))
+                
+    
+        mqttc.loop()
+        time.sleep(SECONDS_BETWEEN_REFRESH)
+        loops += 1
+        
 
-    mqttc.loop()
-    time.sleep(SECONDS_BETWEEN_REFRESH)
-    loops += 1
+      
+        
+if __name__ == '__main__':
+    main()
