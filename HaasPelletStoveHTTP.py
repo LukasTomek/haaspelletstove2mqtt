@@ -30,13 +30,13 @@ class HttpConection():
         print('stateChange ' + id + ' ' + state)
         
         # you can use the ack flag to detect if it is status (true) or command (false)
-        if (state and not state.ack):
-            print('stateChange (command): ' + id + ' ' + state)
-            post_data_prg = '{"prg":' + state + '}'
-            self.createHeader(post_data_prg)
-            
-            r = post(self.url, data=post_data_prg, headers=self.headers)
-            print(r.content)
+        # if (state and not state.ack):
+        print('stateChange (command): ' + id + ' ' + state)
+        post_data_prg = '{"prg":' + state + '}'
+        self.createHeader(post_data_prg)
+        
+        r = post(self.url, data=post_data_prg, headers=self.headers)
+        print(r.content)
         
         # if String(id) is (adapter.namespace + '.device.prg'):
         #         # Set new program
