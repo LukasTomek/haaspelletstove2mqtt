@@ -118,8 +118,9 @@ KNOWN_KEYS = {
 }
 class MQTTConnector():
     """__init__() functions as the class constructor"""
-    def __init__(self, mqttc):
+    def __init__(self, mqttc, httpConector):
         self.mqttc = mqttc
+        self.HttpConector = httpConector
         mqttc.username_pw_set(USERNAME, PASSWORD)
         mqttc.on_connect = self.on_connect
         mqttc.on_subscribe = self.on_subscribe
@@ -127,7 +128,9 @@ class MQTTConnector():
         mqttc.connect(MQTT_BROKER, MQTT_PORT, MQTT_KEEPALIVE_INTERVAL)
         
     def on_message_from_bedroom(self, client, userdata, message):
-        print("Message Recieved from Bedroom: "+message.payload.decode())
+        print("Message Recieved from Bedroom: " + message.payload.decode())
+        if (self.HttpConector.prg != message.payload.decode()):
+            self.HttpConector.handleStateChange(10, message.payload.decode())
        
     def on_subscribe(self, client, userdata, mid, granted_qos):
         print("Message Recieved from Others: ".format(mid))
@@ -142,14 +145,13 @@ class MQTTConnector():
             print("Failed to connect, return code {}\n".format(rc))
         
 def main():
+    # Initiate http conection to stove
+    parser = http.HttpConection(config['HAASPELLETSTOVE']['IP'])
     # Initiate MQTT Client
     mqttc = mqtt.Client()
     # Initiate  MQTT Cconnector
-    connector = MQTTConnector(mqttc)
+    connector = MQTTConnector(mqttc, parser)
 
-    
-
-    
     print('Configuring topics...')
     #Configure HASS MQTT topics
     for k in KNOWN_KEYS:
@@ -161,7 +163,8 @@ def main():
     mqttc.subscribe(mytopic, qos=1)
     mqttc.message_callback_add(mytopic, connector.on_message_from_bedroom)
     loops = 0
-    parser = http.HttpConection(config['HAASPELLETSTOVE']['IP'])
+
+    
     
     #### RUN ####
     while True:
