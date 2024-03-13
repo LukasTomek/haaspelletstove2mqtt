@@ -180,7 +180,7 @@ class HttpConection():
             'Accept-Encoding': 'gzip;q=1.0, compress;q=0.5',
             'token': '32bytes',
             'Content-Type': 'application/json',
-            'Content-Length': len(post_data),
+            'Content-Length': str(len(post_data)),
             'User-Agent': 'ios',
             'Connection':    'keep-alive',
             'X-HS-PIN': self.hspin
