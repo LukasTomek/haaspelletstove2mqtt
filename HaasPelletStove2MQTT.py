@@ -141,7 +141,7 @@ class MQTTConnector():
         else:
             print("Failed to connect, return code {}\n".format(rc))
         
-def main(self):
+def main():
     # Initiate MQTT Client
     mqttc = mqtt.Client()
     # Initiate  MQTT Cconnector
