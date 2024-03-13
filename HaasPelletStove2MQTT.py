@@ -130,7 +130,7 @@ class MQTTConnector():
     def on_message_from_bedroom(self, client, userdata, message):
         print("Message Recieved from Bedroom: " + message.payload.decode())
         if (self.HttpConector.prg != message.payload.decode()):
-            self.HttpConector.handleStateChange(10, message.payload.decode())
+            self.HttpConector.handleStateChange('10', message.payload.decode())
        
     def on_subscribe(self, client, userdata, mid, granted_qos):
         print("Message Recieved from Others: ".format(mid))
