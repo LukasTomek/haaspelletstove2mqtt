@@ -10,3 +10,5 @@ PASSWORD = eitaeLoo123
 [UART]
 PORT = /dev/ttyACM0
 
+[PELLET_STOVE]
+PIN = 0000

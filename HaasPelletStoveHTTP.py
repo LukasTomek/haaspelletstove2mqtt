@@ -5,7 +5,7 @@ from requests import get, post
 
 class HttpConection():
     """__init__() functions as the class constructor"""
-    def __init__(self, IP):
+    def __init__(self, IP, PIN):
         # Variables
         self.deviceStates = [];                 # Used to internally buffer the retrieved states before writing them to the adapter
         self.noOfConnectionErrors = 0           # Counter for connection problems
@@ -14,10 +14,11 @@ class HttpConection():
         self.disableAdapter = False             # If an error occurs, this variable is set to true which disables the adapter
         self.hw_version = 0                     # Hardware version retrieved from the device
         self.sw_version = 0                     # Software version retrieved from the device
-        self.hpin = 0                           # HPIN is the 'encrypted' PIN of the device
+        self.hpin = self.calculateHPIN(PIN)     # HPIN is the 'encrypted' PIN of the device
         self.hspin = 0                          # HSPIN is the secret, depending on the current NONCE and the HPIN
         self.nonce = 0                          # The current NONCE of the device
         self.adapter = 0                        # Adapter object
+        # self.pin = PIN                          # PIN of the device
         self.prg = ''
         self.mode = ''
         self.ip = IP
@@ -109,6 +110,7 @@ class HttpConection():
             self.prg = state['prg']
             self.mode = state['mode']
             self.nonce = state['meta']['nonce']
+            self.hspin = self.calculateHSPIN(self.nonce, self.hpin)
             
         except Exception as e:
             # Dump error and stop adapter
@@ -183,7 +185,7 @@ class HttpConection():
             'Content-Length': str(len(post_data)),
             'User-Agent': 'ios',
             'Connection':    'keep-alive',
-            'X-HS-PIN': self.hspin
+            'X-HS-PIN': str(self.hspin)
             }
          
             

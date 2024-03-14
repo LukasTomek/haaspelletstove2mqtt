@@ -15,6 +15,10 @@ MQTT_BROKER = config['MQTT_BROKER']['MQTT_BROKER']
 MQTT_PORT = int(config['MQTT_BROKER']['MQTT_PORT'])
 MQTT_KEEPALIVE_INTERVAL = int(config['MQTT_BROKER']['MQTT_KEEPALIVE_INTERVAL'])
 
+### STOVE CONFIG ####
+STOVE_IP = config['HAASPELLETSTOVE']['IP']
+STOVE_PIN = config['PELLET_STOVE']['PIN']
+
 HASS_TOPIC_PREFIX = "homeassistant" # Default 'homeassistant'
 HASS_ENTITY_NAME = "mypelletstove"  # Used for topics + sensor prefix
 HASS_CONFIG_SUFFIX = "config"       # Should not be changed
@@ -146,7 +150,7 @@ class MQTTConnector():
         
 def main():
     # Initiate http conection to stove
-    parser = http.HttpConection(config['HAASPELLETSTOVE']['IP'])
+    parser = http.HttpConection(STOVE_IP, STOVE_PIN)
     # Initiate MQTT Client
     mqttc = mqtt.Client()
     # Initiate  MQTT Cconnector
