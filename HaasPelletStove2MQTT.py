@@ -17,7 +17,7 @@ MQTT_KEEPALIVE_INTERVAL = int(config['MQTT_BROKER']['MQTT_KEEPALIVE_INTERVAL'])
 
 ### STOVE CONFIG ####
 STOVE_IP = config['HAASPELLETSTOVE']['IP']
-STOVE_PIN = config['PELLET_STOVE']['PIN']
+STOVE_PIN = config['PELLET_STOVE']['PIN'].encode('utf-8') # TypeError: Strings must be encoded before hashing
 
 HASS_TOPIC_PREFIX = "homeassistant" # Default 'homeassistant'
 HASS_ENTITY_NAME = "mypelletstove"  # Used for topics + sensor prefix
