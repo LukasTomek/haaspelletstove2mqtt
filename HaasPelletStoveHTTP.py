@@ -37,7 +37,7 @@ class HttpConection():
         self.createHeader(post_data_prg)
         
         r = post(self.url, data=post_data_prg, headers=self.headers)
-        print(r.content)
+        print('Post response: {}'.format(r.content))
         
         # if String(id) is (adapter.namespace + '.device.prg'):
         #         # Set new program
