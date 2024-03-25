@@ -169,7 +169,7 @@ class HttpConection():
     # HPIN = MD5(PIN)
     def calculateHPIN(self, PIN):
         result = hashlib.md5(PIN);
-        print('HPIN: {}'.format(result));
+        print('HPIN: {}'.format(result.hexdigest()));
         return result;
     
     def createHeader(self, post_data):
