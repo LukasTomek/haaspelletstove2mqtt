@@ -161,7 +161,7 @@ class HttpConection():
     # Given the HPIN and the current NONCE, the HSPIN is calculated
     # HSPIN = MD5(NONCE + HPIN)
     def calculateHSPIN(self, NONCE, HPIN):
-        result = hashlib.md5(NONCE + HPIN).hexdigest();
+        result = hashlib.md5((NONCE + HPIN).encode('utf-8')).hexdigest();
         print('HSPIN: {}'.format(result));
         return result;
     
