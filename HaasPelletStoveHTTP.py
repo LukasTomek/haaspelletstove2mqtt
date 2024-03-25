@@ -161,15 +161,15 @@ class HttpConection():
     # Given the HPIN and the current NONCE, the HSPIN is calculated
     # HSPIN = MD5(NONCE + HPIN)
     def calculateHSPIN(self, NONCE, HPIN):
-        result = hashlib.md5(NONCE + HPIN);
-        print('HSPIN: {}'.format(result.hexdigest()));
+        result = hashlib.md5(NONCE + HPIN).hexdigest();
+        print('HSPIN: {}'.format(result));
         return result;
     
     # The PIN of the device is used to calculate the HPIN
     # HPIN = MD5(PIN)
     def calculateHPIN(self, PIN):
-        result = hashlib.md5(PIN);
-        print('HPIN: {}'.format(result.hexdigest()));
+        result = hashlib.md5(PIN).hexdigest();
+        print('HPIN: {}'.format(result));
         return result;
     
     def createHeader(self, post_data):
@@ -185,12 +185,12 @@ class HttpConection():
             'Content-Length': str(len(post_data)),
             'User-Agent': 'ios',
             'Connection':    'keep-alive',
-            'X-HS-PIN': str(self.hspin)
+            'X-HS-PIN': str(self.hspin.hexdigest())
             }
          
             
 def main():
-    parser = HttpConection() 
+    parser = HttpConection('localhost', '0000'.encode('utf-8')) 
     parser.pollDeviceStatus()
     print('Done!\n')
 if __name__ == '__main__':
