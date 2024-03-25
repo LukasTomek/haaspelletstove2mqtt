@@ -132,7 +132,7 @@ class MQTTConnector():
         mqttc.connect(MQTT_BROKER, MQTT_PORT, MQTT_KEEPALIVE_INTERVAL)
         
     def on_message_from_bedroom(self, client, userdata, message):
-        print("Message Recieved from Bedroom: " + message.payload.decode())
+        print("Message Recieved from Bedroom: {}".format(message.payload.decode()))
         if (self.HttpConector.prg != message.payload.decode()):
             self.HttpConector.handleStateChange('10', message.payload.decode())
        
@@ -140,7 +140,7 @@ class MQTTConnector():
         print("Message Recieved from Others: ".format(mid))
     
     def on_message(self, client, userdata, message):
-        print("Message Recieved from Others: "+message.payload.decode())
+        print("Message Recieved from Others: {}".format(message.payload.decode()))
         
     def on_connect(self, client, userdata, flags, rc):
         if rc == 0:

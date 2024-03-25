@@ -37,7 +37,7 @@ class HttpConection():
         self.createHeader(post_data_prg)
         
         r = post(self.url, data=post_data_prg, headers=self.headers)
-        print(r.content)
+        print('Post response: {}'.format(r.content))
         
         # if String(id) is (adapter.namespace + '.device.prg'):
         #         # Set new program
@@ -98,9 +98,9 @@ class HttpConection():
             # Iterate all elements
             for item in state:   
                 print(item)
-                print(type(state[item]))
+                print('{}'.format(type(state[item])))
                 if item == 'error':
-                    print(item)
+                    print('{}'.format(item))
                 if isinstance(state[item], dict | list):
                     for subitem in state[item]:
                         print('{}: {}'.format(item, subitem))
@@ -114,13 +114,13 @@ class HttpConection():
             
         except Exception as e:
             # Dump error and stop adapter
-            print('Error syncing states: ' + e)
+            print('Error syncing states: {}'.format(e))
             self.disableAdapter = True
 
     # Main function to poll the device status
     def pollDeviceStatus(self):
         response = get(self.url)
-        print(response.text)
+        print('{}'.format(response.text))
         if response.status_code == 200:
     
             try:
