@@ -185,7 +185,7 @@ class HttpConection():
             'Content-Length': str(len(post_data)),
             'User-Agent': 'ios',
             'Connection':    'keep-alive',
-            'X-HS-PIN': str(self.hspin.hexdigest())
+            'X-HS-PIN': str(self.hspin)
             }
          
             
