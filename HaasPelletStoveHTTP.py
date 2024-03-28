@@ -1,4 +1,4 @@
-
+import logging
 import hashlib
 import json
 from requests import get, post
@@ -28,16 +28,16 @@ class HttpConection():
     # Handle a state change
     def handleStateChange(self, id, state):
         # Warning, state can be null if it was deleted
-        print('stateChange ' + id + ' ' + state)
+        logging.info('stateChange ' + id + ' ' + state)
         
         # you can use the ack flag to detect if it is status (true) or command (false)
         # if (state and not state.ack):
-        print('stateChange (command): ' + id + ' ' + state)
+        logging.info('stateChange (command): ' + id + ' ' + state)
         post_data_prg = '{"prg":' + state + '}'
         self.createHeader(post_data_prg)
         
         r = post(self.url, data=post_data_prg, headers=self.headers)
-        print('Post response: {}'.format(r.content))
+        logging.info('Post response: {}'.format(r.content))
         
         # if String(id) is (adapter.namespace + '.device.prg'):
         #         # Set new program
@@ -92,21 +92,21 @@ class HttpConection():
 
         
     def syncState(self, state, path):
-        print('Syncing state of the oven')
+        logging.info('Syncing state of the oven')
         
         try:
             # Iterate all elements
             for item in state:   
-                print(item)
-                print('{}'.format(type(state[item])))
+                logging.info(item)
+                logging.info('{}'.format(type(state[item])))
                 if item == 'error':
-                    print('{}'.format(item))
+                    logging.info('{}'.format(item))
                 if isinstance(state[item], dict | list):
                     for subitem in state[item]:
-                        print('{}: {}'.format(item, subitem))
+                        logging.info('{}: {}'.format(item, subitem))
 
-            print('Nonce: {}'.format(state['meta']['nonce']))
-            print('Mode: {}'.format(state['mode']))
+            logging.info('Nonce: {}'.format(state['meta']['nonce']))
+            logging.info('Mode: {}'.format(state['mode']))
             self.prg = state['prg']
             self.mode = state['mode']
             self.nonce = state['meta']['nonce']
@@ -114,13 +114,13 @@ class HttpConection():
             
         except Exception as e:
             # Dump error and stop adapter
-            print('Error syncing states: {}'.format(e))
+            logging.info('Error syncing states: {}'.format(e))
             self.disableAdapter = True
 
     # Main function to poll the device status
     def pollDeviceStatus(self):
         response = get(self.url)
-        print('{}'.format(response.text))
+        logging.info('{}'.format(response.text))
         if response.status_code == 200:
     
             try:
@@ -134,7 +134,7 @@ class HttpConection():
                 self.syncState(result, '')
             except Exception as e:
                 # Parser error
-                print('Error parsing the response: {}'.format(e))
+                logging.info('Error parsing the response: {}'.format(e))
     
                 # Increment error counter
                 self.noOfConnectionErrors += 1
@@ -162,14 +162,14 @@ class HttpConection():
     # HSPIN = MD5(NONCE + HPIN)
     def calculateHSPIN(self, NONCE, HPIN):
         result = hashlib.md5((NONCE + HPIN).encode('utf-8')).hexdigest();
-        print('HSPIN: {}'.format(result));
+        logging.info('HSPIN: {}'.format(result));
         return result;
     
     # The PIN of the device is used to calculate the HPIN
     # HPIN = MD5(PIN)
     def calculateHPIN(self, PIN):
         result = hashlib.md5(PIN).hexdigest();
-        print('HPIN: {}'.format(result));
+        logging.info('HPIN: {}'.format(result));
         return result;
     
     def createHeader(self, post_data):

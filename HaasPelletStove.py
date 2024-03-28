@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-
+import logging
 import serial
 import json
 
@@ -84,12 +84,12 @@ def getData(serialConn):
             line = bytesRead.decode('utf-8', 'ignore') #data get sometime corrupted so ingnore this data 
 
         line = line.strip('\r\n').strip('pm ')
-        print(line)
+        logging.info(line)
         if 'pm' in line:
             line = line [line.find('pm')+3:]
         if 'z' in line:
             line = line [:line.find('z')]
         #valueList = list(map(float, line.split(' ')))
         valueList = line.split(' ')
-        print(valueList)
+        logging.info(valueList)
     return valueList
